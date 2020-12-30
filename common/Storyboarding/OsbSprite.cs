@@ -19,6 +19,128 @@ namespace StorybrewCommon.Storyboarding
         private CommandGroup currentCommandGroup;
         public bool InGroup => currentCommandGroup != null;
 
+        // LeeGod start - Destory the Sprite at specific moment - cancel any other command after the time.
+        public void DestoryAt(int time) {
+            var cmds = commands.ToArray();
+            int[] lastColor = { -1, -1 };
+            int[] lastFade = { -1, -1 };
+            int[] lastScale = { -1, -1 };
+            int[] lastMove = { -1, -1 };
+            int[] lastRotate = { -1, -1 };
+
+            foreach (var command in cmds)
+            {
+                if (command.StartTime > time) {
+                    commands.Remove(command);
+                } else if (command.EndTime > time) {
+                    commands.Remove(command);
+                    var org = command.EndTime - command.StartTime;
+                    var multiplier = time - command.StartTime / org;
+
+                    if (command is ColorCommand colorCommand)
+                    {
+                        if (lastColor[0] != -1 && lastColor[0] < command.StartTime && lastColor[1] > command.EndTime)
+                        {
+                            continue;
+                        }
+                        lastColor = new int[]{ (int)command.StartTime, (int)command.EndTime };
+
+                        Color(colorCommand.Easing, colorCommand.StartTime, time, colorCommand.StartValue,
+                                colorCommand.EndValue * multiplier);
+                    } 
+                    else if (command is FadeCommand fadeCommand)
+                    {
+                        if (lastFade[0] != -1 && lastFade[0] < command.StartTime && lastFade[1] > command.EndTime)
+                        {
+                            continue;
+                        }
+                        lastFade = new int[]{ (int)command.StartTime, (int)command.EndTime };
+                        Fade(fadeCommand.Easing, fadeCommand.StartTime, time, fadeCommand.StartValue,
+                            fadeCommand.EndValue * multiplier);
+                    }
+                    else if (command is ScaleCommand scaleCommand)
+                    {
+                        if (lastScale[0] != -1 && lastScale[0] < command.StartTime && lastScale[1] > command.EndTime)
+                        {
+                            continue;
+                        }
+                        lastScale = new int[]{ (int)command.StartTime, (int)command.EndTime };
+                        Scale(scaleCommand.Easing, scaleCommand.StartTime, time, scaleCommand.StartValue,
+                            scaleCommand.EndValue * multiplier);
+                    }
+                    else if (command is VScaleCommand vScaleCommand)
+                    {
+                        if (lastScale[0] != -1 && lastScale[0] < command.StartTime && lastScale[1] > command.EndTime)
+                        {
+                            continue;
+                        }
+                        lastScale = new int[]{ (int)command.StartTime, (int)command.EndTime };
+                        ScaleVec(vScaleCommand.Easing, vScaleCommand.StartTime, time, vScaleCommand.StartValue,
+                            vScaleCommand.EndValue * multiplier);
+                    }
+                    // else if (command is ParameterCommand parameterCommand)
+                    //     Parameter(parameterCommand.Easing, parameterCommand.StartTime, time, parameterCommand.StartValue * multiplier);
+                    else if (command is MoveCommand moveCommand)
+                    {
+                        if (lastMove[0] != -1 && lastMove[0] < command.StartTime && lastMove[1] > command.EndTime)
+                        {
+                            continue;
+                        }
+                        lastMove = new int[]{ (int)command.StartTime, (int)command.EndTime };
+                        Move(moveCommand.Easing, moveCommand.StartTime, time, moveCommand.StartValue,
+                            moveCommand.EndValue * multiplier);
+                    }
+                    else if (command is MoveXCommand moveXCommand)
+                    {
+                        if (lastMove[0] != -1 && lastMove[0] < command.StartTime && lastMove[1] > command.EndTime)
+                        {
+                            continue;
+                        }
+                        lastMove = new int[]{ (int)command.StartTime, (int)command.EndTime };
+                        MoveX(moveXCommand.Easing, moveXCommand.StartTime, time, moveXCommand.StartValue,
+                            moveXCommand.EndValue * multiplier);
+                    }
+                    else if (command is MoveYCommand moveYCommand)
+                    {
+                        if (lastMove[0] != -1 && lastMove[0] < command.StartTime && lastMove[1] > command.EndTime)
+                        {
+                            continue;
+                        }
+                        lastMove = new int[]{ (int)command.StartTime, (int)command.EndTime };
+                        MoveY(moveYCommand.Easing, moveYCommand.StartTime, time, moveYCommand.StartValue,
+                            moveYCommand.EndValue * multiplier);
+                    }
+                    else if (command is RotateCommand rotateCommand)
+                    {
+                        if (lastRotate[0] != -1 && lastRotate[0] < command.StartTime && lastRotate[1] > command.EndTime)
+                        {
+                            continue;
+                        }
+                        lastRotate = new int[]{ (int)command.StartTime, (int)command.EndTime };
+                        Rotate(rotateCommand.Easing, rotateCommand.StartTime, time, rotateCommand.StartValue,
+                            rotateCommand.EndValue * multiplier);
+                    }
+
+                    // Dont SUPPORT YET
+                    // else if (command is LoopCommand loopCommand)
+                    // {
+                    //     StartLoopGroup(loopCommand.StartTime, loopCommand.LoopCount);
+                    //     foreach (var cmd in loopCommand.Commands)
+                    //         AddCommand(cmd);
+                    //     EndGroup();
+                    // }
+                    // else if (command is TriggerCommand triggerCommand)
+                    // {
+                    //     StartTriggerGroup(triggerCommand.TriggerName, triggerCommand.StartTime, triggerCommand.EndTime, triggerCommand.Group);
+                    //     foreach (var cmd in triggerCommand.Commands)
+                    //         AddCommand(cmd);
+                    //     EndGroup();
+                    // }
+                }
+            }
+        }
+        // LeeGod end
+        
         /// <summary>
         /// If this sprite contains more than CommandSplitThreshold commands, they will be split between multiple sprites.
         /// Does not apply when the sprite has triggers.

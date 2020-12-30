@@ -588,8 +588,8 @@ namespace StorybrewEditor.ScreenLayers
                 unusedCommandCount >= 20000)
                 warnings += $"⚠ {unusedCommandCount:n0} ({unusedCommandFactor:0%}) Commands on Hidden Sprites\n";
 
-            if (project.FrameStats.OverlappedCommands)
-                warnings += $"⚠ Overlapped Commands\n";
+            if (project.FrameStats.OverlappedCommands != null)
+                warnings += $"⚠ Overlapped Commands for sprite " + project.FrameStats.OverlappedCommands + "\n";
             if (project.FrameStats.IncompatibleCommands)
                 warnings += $"⚠ Incompatible Commands\n";
 

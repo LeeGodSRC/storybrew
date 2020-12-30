@@ -6,7 +6,7 @@
         public int CommandCount;
         public int EffectiveCommandCount;
         public bool IncompatibleCommands;
-        public bool OverlappedCommands;
+        public string OverlappedCommands; // LeeGod - Show which sprite is overlapping
         public float ScreenFill;
     }
 }

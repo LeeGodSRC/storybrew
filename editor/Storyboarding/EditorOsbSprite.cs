@@ -37,7 +37,10 @@ namespace StorybrewEditor.Storyboarding
                 frameStats.SpriteCount++;
                 frameStats.CommandCount += sprite.CommandCost;
                 frameStats.IncompatibleCommands |= sprite.HasIncompatibleCommands;
-                frameStats.OverlappedCommands |= sprite.HasOverlappedCommands;
+                if (sprite.HasOverlappedCommands)
+                {
+                    frameStats.OverlappedCommands = sprite.TexturePath; // LeeGod - Show which sprite is overlapping
+                }
             }
 
             var fade = sprite.OpacityAt(time);
